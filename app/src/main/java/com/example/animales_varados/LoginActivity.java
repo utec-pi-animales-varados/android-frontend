@@ -59,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         //4.2. Create request object
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                "http://localhost:8080/authenticate",
+                "http://10.0.2.2:8000/authenticate",
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
