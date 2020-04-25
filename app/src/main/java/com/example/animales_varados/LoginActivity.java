@@ -1,14 +1,13 @@
 package com.example.animales_varados;
-import androidx.appcompat.app.AppCompatActivity;
 
-
+import android.support.v7.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -24,11 +23,13 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
     }
+
 
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -37,6 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     public Activity getActivity(){
         return this;
     }
+
+
 
     public void onBtnLoginClicked(View view){
         //1.  Getting username and password (from the view)
@@ -59,7 +62,7 @@ public class LoginActivity extends AppCompatActivity {
         //4.2. Create request object
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                "http://10.0.2.2:8000/authenticate",
+                "http://10.0.2.2:8080/authenticate",
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
