@@ -19,16 +19,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical">
-            <ImageView
-                android:id="@+id/papel"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="@null"
-                android:layout_marginTop="75dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/img">
-            </ImageView>
-
         </LinearLayout>
 
         <LinearLayout
@@ -95,13 +85,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center">
+
             <Button
                 android:id="@+id/btnLogin"
-                android:scaleType="fitCenter"
-                android:backgroundTint="#FF0000"
                 android:layout_width="90dp"
                 android:layout_height="40dp"
-                android:onClick="onBtnLoginClicked"/>
+                android:backgroundTint="#FFF"
+                android:onClick="onBtnLoginClicked"
+                android:scaleType="fitCenter"
+                android:text="Ingresar"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -1,4 +1,4 @@
-package com.example.animales_varados;
+package animales_varados.app.Java;
 
 import org.junit.Test;
 
