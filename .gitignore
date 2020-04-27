@@ -12,3 +12,4 @@ ml
 /captures
 .externalNativeBuild
 .cxx
+/.idea/*
