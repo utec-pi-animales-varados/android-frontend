@@ -28,28 +28,29 @@
             android:textColor="#000"
             android:textSize="25dp"
             />
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_marginTop="50sp"
             android:layout_height="wrap_content"
             android:textColor="#000"
             android:gravity="center_horizontal"
             android:background="@drawable/corners_buttons3"
-            android:onClick="Go_register"
+            android:id="@+id/go_register"
             android:textSize="20sp"
             android:text="Registrate">
-        </TextView>
-        <TextView
+        </Button>
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_marginTop="50sp"
             android:layout_height="wrap_content"
             android:textColor="#000"
             android:gravity="center_horizontal"
             android:background="@drawable/corners_buttons3"
-            android:onClick="Go_login"
+            android:id="@+id/go_login"
             android:textSize="20sp"
             android:text="Ingresa a tu cuenta">
-        </TextView>
+        </Button>
 
     </LinearLayout>
 
