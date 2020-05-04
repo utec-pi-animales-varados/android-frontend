@@ -52,7 +52,7 @@ public class ReportActivity extends AppCompatActivity {
     }
 
     public void getQuestions(){
-        String url = "godaddy";
+        String url = Constant.DB_URL+"/rest/of/url"; //TODO rest of url for question GET
         RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest request = new JsonObjectRequest(
@@ -82,7 +82,7 @@ public class ReportActivity extends AppCompatActivity {
     }
 
     public void postReport(){
-        String url = "godaddy";
+        String url = Constant.DB_URL+"/rest/of/url"; //TODO rest of url for report POST
         RequestQueue queue = Volley.newRequestQueue(this);
         Map<String, String> params = new HashMap();
 
