@@ -2,12 +2,15 @@ package com.animalesvarados.animalesvaradosapp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -18,6 +21,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.PermissionToken;
 import com.karumi.dexter.listener.PermissionDeniedResponse;
@@ -31,6 +35,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationListener locationListener;
     LatLng userLatLng;
 
+
     private GoogleMap mMap;
 
     @Override
@@ -41,7 +46,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        FloatingActionButton floating_action_button = findViewById(R.id.floating_action_button);
+
+        floating_action_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Go_reporte();
+            }
+        });
+
+
+
+
     }
+
+
+    public Activity getActivity(){
+        return this;
+    }
+
+    public void Go_reporte(){
+        Intent intent = new Intent(getActivity(), ReportActivity.class);
+        startActivity(intent);
+    }
+
 
 
     /**
@@ -113,4 +142,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }).check();
     }
+
 }
