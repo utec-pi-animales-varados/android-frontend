@@ -61,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
         message.put("lastName", lastname);
         message.put("email", email);
         message.put("password", password);
-        message.put("mobilePhone",phone);
+        message.put("mobilephone",phone);
 
         // 3. Converting the message object to JSON string (jsonify)
         JSONObject jsonMessage = new JSONObject(message);
@@ -69,7 +69,7 @@ public class RegisterActivity extends AppCompatActivity {
         // 4. Sending json message to Server
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                "https://10.0.2.2:8080/usuarios/",
+                "http://107.180.91.147:8080/animales_varados-0.1/signup",
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
