@@ -7,30 +7,42 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.annotation.ArrayRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -38,6 +50,10 @@ public class ReportActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView;
     RecyclerView.Adapter mAdapter;
+
+    Spinner spinner;
+    ArrayList<String> animales;
+    int animalId = 0;
 
     Location gps;
     Location net_loc;
@@ -48,6 +64,7 @@ public class ReportActivity extends AppCompatActivity {
     public Activity getActivity(){
         return this;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +110,26 @@ public class ReportActivity extends AppCompatActivity {
             latitude = 0.0;
             longitude = 0.0;
         }
+
+        //SPINNER
+
+        animales=new ArrayList<>();
+        spinner=(Spinner)findViewById(R.id.animales_sp);
+        loadAnimalesInSpinner();
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String animal= spinner.getItemAtPosition(spinner.getSelectedItemPosition()).toString();
+                animalId = i;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // DO Nothing here
+            }
+
+            });
     }
+
 
     public void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -245,4 +281,45 @@ public class ReportActivity extends AppCompatActivity {
         };
         queue.add(jsonObjectRequest);
     }
+
+
+
+
+        private void loadAnimalesInSpinner(){
+            String url = Constant.DB_URL.concat("/animales");
+            RequestQueue requestQueue=Volley.newRequestQueue(getApplicationContext());
+            StringRequest stringRequest=new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try{
+                        JSONArray jsonArray= new JSONArray(response);
+                        animales.add("Seleccione un animal");
+                        for(int i=0;i<jsonArray.length();i++){
+                            JSONObject jsonObject=jsonArray.getJSONObject(i);
+                            String name=jsonObject.getString("name");
+                            animales.add(name);
+                        }
+                        spinner.setAdapter(new ArrayAdapter<String>(ReportActivity.this, android.R.layout.simple_spinner_dropdown_item, animales));
+                    }catch (JSONException e){e.printStackTrace();}
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    error.printStackTrace();
+                }
+            }){
+                @Override
+                public Map<String,String> getHeaders() throws AuthFailureError {
+                    Map<String,String> params = new HashMap<>();
+                    params.put("Authorization","Bearer ".concat(Constant.jwt));
+                    return params;
+                }};
+            int socketTimeout = 30000;
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+            stringRequest.setRetryPolicy(policy);
+            requestQueue.add(stringRequest);
+        }
+
+
+
 }

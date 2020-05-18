@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".ReportActivity">
 
+
     <LinearLayout
         android:padding="12dp"
         android:layout_width="match_parent"
@@ -14,7 +15,6 @@
         android:id="@+id/loginLayout"
         android:orientation="vertical"
         android:background="#293462">
-
 
 
         <LinearLayout
@@ -32,6 +32,7 @@
                 android:textSize="40dp"
                 />
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -97,6 +98,22 @@
 
         </LinearLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/dropdown">
+
+        <Spinner
+            android:id="@+id/animales_sp"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="40dp"
+            android:spinnerMode="dropdown">
+        </Spinner>
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_recycler_view"
