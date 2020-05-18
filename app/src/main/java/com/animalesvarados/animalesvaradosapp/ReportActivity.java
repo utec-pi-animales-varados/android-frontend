@@ -146,7 +146,9 @@ public class ReportActivity extends AppCompatActivity {
 
 
     public void onClickBtnSend(View v) {
-        postReport();
+        if(animalId != 0) {
+            postReport();
+        }
     }
 
     public void getQuestions(){
@@ -246,7 +248,7 @@ public class ReportActivity extends AppCompatActivity {
 
         try {
             usr.put("id","1");
-            animal.put("id",1);
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -255,6 +257,7 @@ public class ReportActivity extends AppCompatActivity {
         //parse into json
 
         try {
+            animal.put("id",animalId);
             parameters.put("date",date);
             parameters.put("latitude",latitude);
             if(!comment.equals("")) {
