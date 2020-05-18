@@ -3,6 +3,7 @@ package com.animalesvarados.animalesvaradosapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,35 +47,40 @@ public class LoginActivity extends AppCompatActivity {
         String username = txtUsername.getText().toString();
         String password = txtPassword.getText().toString();
 
+        Log.d("user",username);
+        Log.d("password",password);
+        Log.d("url",Constant.DB_URL);
+
         //2.  Creating a message using user input
         Map<String, String> message = new HashMap<>();
-        message.put("usuario", username);
-        message.put("contrasena", password);
+        message.put("username", username);
+        message.put("password", password);
 
         //3.  Converting the message object to JSON string (jsonify)
         JSONObject jsonMessage = new JSONObject(message);
-        //Toast.makeText(this,jsonMessage.toString(),Toast.LENGTH_LONG).show();
 
         //4.  Sending json message to the server
         //4.1. Install volley
         //4.2. Create request object
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                Constant.DB_URL+"/rest/of/url", //TODO rest of url for user auth
+                Constant.DB_URL.concat("/authenticate"),
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         //TODO Qué hacer cuando el server responda
                         showMessage("Authorized!");
-                        try {
-                            String token = response.getString("jwt");
-                            //String username = response.getString("username");
-                            //int user_id = response.getInt("user_id");
-                            //String nombre = response.getString("nombre");
-                            //goToExperienciasActivity(user_id,username,nombre);
-
-                        } catch (JSONException e) {
+                        try
+                        {
+                            Log.d("response","success");
+                            Constant.jwt = response.getString("jwt");
+                            Log.d("jwt",Constant.jwt);
+                            Intent intent = new Intent(getActivity(),MapsActivity.class);
+                            startActivity(intent);
+                        }
+                        catch (JSONException e)
+                        {
                             e.printStackTrace();
                         }
 
@@ -84,8 +91,6 @@ public class LoginActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         //TODO Qué hacer cuando ocurra un error
                         showMessage("Unauthorized!!!");
-                        Intent intent = new Intent(getActivity(),MapsActivity.class);
-                        startActivity(intent);
                     }
                 }
         );

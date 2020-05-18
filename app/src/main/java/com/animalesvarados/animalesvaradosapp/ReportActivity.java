@@ -1,5 +1,8 @@
 package com.animalesvarados.animalesvaradosapp;
 import android.app.Activity;
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,15 +48,16 @@ public class ReportActivity extends AppCompatActivity {
         super.onResume();
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        getQuestions();
+        //getQuestions();
     }
 
     public void onClickBtnSend(View v) {
         postReport();
     }
 
+    /*
     public void getQuestions(){
-        String url = Constant.DB_URL+"/rest/of/url"; //TODO rest of url for question GET
+        String url = Constant.DB_URL.concat("/reporte"); //TODO rest of url for question GET
         RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest request = new JsonObjectRequest(
@@ -80,13 +85,16 @@ public class ReportActivity extends AppCompatActivity {
         );
         queue.add(request);
     }
+     */
 
     public void postReport(){
         String url = Constant.DB_URL+"/rest/of/url"; //TODO rest of url for report POST
         RequestQueue queue = Volley.newRequestQueue(this);
         Map<String, String> params = new HashMap();
 
+
         //PARAMS
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
         JSONObject parameters = new JSONObject(params);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
