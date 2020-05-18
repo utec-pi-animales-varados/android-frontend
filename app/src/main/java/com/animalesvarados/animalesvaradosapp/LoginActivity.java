@@ -91,6 +91,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         //TODO Qué hacer cuando ocurra un error
                         showMessage("Unauthorized!!!");
+                        Intent intent = new Intent(getActivity(),DrawerActivity.class);
+                        startActivity(intent);
                     }
                 }
         );

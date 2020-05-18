@@ -46,30 +46,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        FloatingActionButton floating_action_button = findViewById(R.id.floating_action_button);
-
-        floating_action_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Go_reporte();
-            }
-        });
-
-
-
+//        FloatingActionButton floating_action_button = findViewById(R.id.floating_action_button);
+//
+//        floating_action_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Go_reporte();
+//            }
+//        });
 
     }
 
 
-    public Activity getActivity(){
-        return this;
-    }
-
-    public void Go_reporte(){
-        Intent intent = new Intent(getActivity(), ReportActivity.class);
-        startActivity(intent);
-    }
+//    public Activity getActivity(){
+//        return this;
+//    }
+//
+//    public void Go_reporte(){
+//        Intent intent = new Intent(getActivity(), ReportActivity.class);
+//        startActivity(intent);
+//    }
 
 
 

@@ -67,7 +67,8 @@ public class ReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //String username = getIntent().getExtras().get("username").toString();
         mRecyclerView = findViewById(R.id.main_recycler_view);
         //mAdapter = null;
         //mRecyclerView.setAdapter(mAdapter);
