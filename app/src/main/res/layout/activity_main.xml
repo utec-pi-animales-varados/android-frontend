@@ -5,21 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="#3880AC">
-
+    android:background="#F2F3F4">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
         android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-        </LinearLayout>
 
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="70dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,29 +25,46 @@
             android:textColor="#000"
             android:textSize="25dp"
             />
+
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="100dp"
+            android:layout_marginTop="50dp">
+
+
         <Button
             android:layout_width="wrap_content"
-            android:layout_marginTop="50sp"
             android:layout_height="wrap_content"
-            android:textColor="#000"
-            android:gravity="center_horizontal"
+            android:textColor="#FFF"
+            android:gravity="center"
             android:background="@drawable/corners_buttons3"
             android:id="@+id/go_register"
             android:textSize="20sp"
             android:text="Registrate">
         </Button>
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="100dp">
+
         <Button
             android:layout_width="wrap_content"
-            android:layout_marginTop="50sp"
             android:layout_height="wrap_content"
-            android:textColor="#000"
-            android:gravity="center_horizontal"
+            android:textColor="#FFF"
+            android:gravity="center"
             android:background="@drawable/corners_buttons3"
             android:id="@+id/go_login"
             android:textSize="20sp"
             android:text="Ingresa a tu cuenta">
         </Button>
+
+        </LinearLayout>
 
     </LinearLayout>
 
