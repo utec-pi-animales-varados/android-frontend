@@ -4,35 +4,34 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 @SuppressLint("Registered")
-public class MainActivity extends AppCompatActivity {
+public class IngresoCuentaActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ingresocuenta);
         setTitle("Reporte animales varados");
 
-        final Button loginbtn = findViewById(R.id.go_cuenta);
-        final Button regbtn = findViewById(R.id.go_invitado);
+        final Button loginbtn = findViewById(R.id.go_login);
+        final Button regbtn = findViewById(R.id.go_register);
 
         loginbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Go_cuentas();
+                Go_login();
             }
         });
 
         regbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Go_invitado();
+                Go_register();
             }
         });
     }
@@ -42,20 +41,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void Go_cuentas(){
-        Intent intent = new Intent(getActivity(), IngresoCuentaActivity.class);
+    public void Go_login(){
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivity(intent);
     }
 
 
-    public void Go_invitado(){
-
-        //INGRESAR COMO INVITADO
-        Log.d("Ingresando como invitado: ","true");
-
-        /*
+    public void Go_register(){
         Intent intent = new Intent(getActivity(), RegisterActivity.class);
         startActivity(intent);
-         */
     }
 }
+
