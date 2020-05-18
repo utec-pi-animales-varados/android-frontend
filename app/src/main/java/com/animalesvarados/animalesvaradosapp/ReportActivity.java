@@ -7,10 +7,14 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +25,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -29,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,7 +43,7 @@ import java.util.Map;
 public class ReportActivity extends AppCompatActivity {
 
     RecyclerView mRecyclerView;
-    RecyclerView.Adapter mAdapter;
+    ReportAdapter mAdapter;
 
     Location gps;
     Location net_loc;
@@ -53,8 +59,11 @@ public class ReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-        //String username = getIntent().getExtras().get("username").toString();
+
         mRecyclerView = findViewById(R.id.main_recycler_view);
+        //mAdapter = null;
+        //mRecyclerView.setAdapter(mAdapter);
+
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -102,38 +111,38 @@ public class ReportActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //getQuestions();
+        Log.d("Setting manager","pre");
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        Log.d("Setting manager","post");
+        getQuestions();
     }
+
 
     public void onClickBtnSend(View v) {
         postReport();
     }
 
     public void getQuestions(){
-        String url = Constant.DB_URL.concat("/reporte"); //TODO rest of url for question GET
+        String url = Constant.DB_URL.concat("/preguntas");
         RequestQueue queue = Volley.newRequestQueue(this);
+        JSONArray parameters = new JSONArray();
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonArrayRequest request = new JsonArrayRequest(
                 Request.Method.GET,
                 url,
-                null,
-                new Response.Listener<JSONObject>() {
+                parameters,
+                new Response.Listener<JSONArray>() {
                     @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONArray data = response.getJSONArray("response");
-                            mAdapter = new ReportAdapter(data, getActivity());
+                    public void onResponse(JSONArray response) {
+                            Log.d("Creating recycler view",response.toString());
+                            mAdapter = new ReportAdapter(response, getActivity());
                             mRecyclerView.setAdapter(mAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Log.d("RecyclerView","Volley error");
                         error.printStackTrace();
                     }
                 }
@@ -181,22 +190,40 @@ public class ReportActivity extends AppCompatActivity {
         //respuestas
         JSONArray respuestas = new JSONArray();
 
-        JSONObject r1 = new JSONObject();
-        JSONObject p1 = new JSONObject();
+        HashMap<Integer,String> answers = mAdapter.getAnswers();
+
+        JSONObject r;
+        JSONObject p;
+
+        for(Map.Entry<Integer,String> entry: answers.entrySet())
+        {
+            if(!entry.getValue().equals("")){
+                p = new JSONObject();
+                r = new JSONObject();
+                try{
+                    Log.d((("Entry " + (entry.getKey() + 1))),entry.getValue());
+                    p.put("id",(entry.getKey()+1));
+                    r.put("textoRespuesta",entry.getValue());
+                    r.put("pregunta",p);
+                    respuestas.put(r);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+
+        }
+
+        Log.d("respuestas",respuestas.toString());
 
         try {
             usr.put("id","1");
-            r1.put("textoRespuesta","a");
-            p1.put("id",1);
-            r1.put("pregunta",p1);
             animal.put("id",1);
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-
-        respuestas.put(r1);
-
 
         //parse into json
 
@@ -216,7 +243,7 @@ public class ReportActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
+        Log.d("param",parameters.toString());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,

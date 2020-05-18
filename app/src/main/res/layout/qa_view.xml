@@ -7,27 +7,32 @@
     android:padding="1dp"
     >
     <LinearLayout
+        android:id="@+id/q_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/element_view_question_line"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#012"
+            android:ems="10"
+            android:textColor="#FFF"
+            android:backgroundTint="#60FFFFFF"
             />
     </LinearLayout>
 
     <LinearLayout
+        android:layout_below="@+id/q_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <EditText
             android:id="@+id/element_view_answer_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="#012"
+            android:ems="10"
+            android:textColor="#FFF"
+            android:backgroundTint="#60FFFFFF"
             />
     </LinearLayout>
+
 
 </RelativeLayout>
