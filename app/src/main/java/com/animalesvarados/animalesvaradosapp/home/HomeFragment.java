@@ -74,9 +74,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         buildGoogleApiClient();
         mMap.setMyLocationEnabled(true);
         //}
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     protected synchronized void buildGoogleApiClient(){
