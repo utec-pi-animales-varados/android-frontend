@@ -3,6 +3,7 @@ package com.animalesvarados.animalesvaradosapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -52,11 +54,12 @@ public class RegisterActivity extends AppCompatActivity {
         final String email = txtEmail.getText().toString();
         final String name = txtName.getText().toString();
         String lastname = txtLastname.getText().toString();
-        String password = txtPassword.getText().toString();
+        final String password = txtPassword.getText().toString();
         String phone = txtPhone.getText().toString();
 
         // 2. Creating a message from user input data
         Map<String, Object> message = new HashMap<>();
+        message.put("deviceId","111111111111111");
         message.put("name", name);
         message.put("lastName", lastname);
         message.put("email", email);
@@ -76,9 +79,10 @@ public class RegisterActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         //TODO
                         try {
-                            Intent intent = new Intent(getActivity(), LoginActivity.class);
-                            startActivity(intent);
+                            //Intent intent = new Intent(getActivity(), LoginActivity.class);
+                            //startActivity(intent);
                             showMessage("¡" + name + ", tu usuario fue registrado con exito!");
+                            logPostRegister(email,password);
                         }
                         catch (Exception e) {
                             e.printStackTrace();
@@ -101,6 +105,56 @@ public class RegisterActivity extends AppCompatActivity {
         );
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
+    }
+
+
+    public void logPostRegister(String email, String contrasena){
+
+
+        Map<String, String> message = new HashMap<>();
+        message.put("username", email);
+        message.put("password", contrasena);
+
+        JSONObject jsonMessage = new JSONObject(message);
+
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.POST,
+                Constant.DB_URL.concat("/authenticate"),
+                jsonMessage,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //TODO Qué hacer cuando el server responda
+                        showMessage("Authorized!");
+                        try
+                        {
+                            Log.d("response","success");
+                            Constant.jwt = response.getString("jwt");
+                            Constant.userId = response.getInt("user_id");
+                            Intent intent = new Intent(getActivity(),DrawerActivity.class);
+                            startActivity(intent);
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //TODO Qué hacer cuando ocurra un error
+                        showMessage("Unauthorized!!!");
+                    }
+                }
+        );
+
+        //5. Send Request to the Server
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(request);
+
     }
 
 

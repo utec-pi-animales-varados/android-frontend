@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/element_view_container"
+    android:layout_height="72dp"
+    android:layout_width="match_parent"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/animal"
+        android:text="Animal reportado"
+        android:textSize="17sp"
+        android:textColor="#000"
+        />
+
+    <TextView
+        android:id="@+id/fecha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/animal"
+        android:layout_marginTop="1dp"
+        android:text="20/05/2020"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/ubicacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/animal"
+        android:layout_marginEnd="-126dp"
+        android:text="Ubicacion"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btnVerReporte"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:text="Ver"
+        android:textAlignment="center"
+        android:background="@drawable/corners_buttons3"
+        android:layout_marginLeft="295dp"
+        android:textColor="#F2F3F4"/>
+
+
+
+</RelativeLayout>
