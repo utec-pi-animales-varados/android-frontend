@@ -5,8 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -35,23 +39,34 @@ public class DetalleReporteActivity extends AppCompatActivity {
         id_reporte = getIntent().getExtras().getInt("id_reporte");
         Log.d("id_reporte",Integer.toString(id_reporte));
         setContentView(R.layout.activity_detallereporte);
-        getReportes();
+        getReporte();
     }
 
 
-
-    public void getReportes(){
+    public void getReporte() {
+        final TextView animal = findViewById(R.id.animal);
+        final TextView fecha = findViewById(R.id.fecha);
+        final TextView ubicacion = findViewById(R.id.ubicacion);
 
         JSONObject jsonMessage = new JSONObject();
 
         JsonObjectRequest request = new JsonObjectRequest(
-                Request.Method.POST,
+                Request.Method.GET,
                 Constant.DB_URL.concat("/reportes/"+id_reporte),
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                            Log.d("Creating recycler view",response.toString());
+                        try {
+                            String coords = response.getString("latitude")+", "+response.getString("longitude");
+                            animal.setText(response.getString("id"));
+                            fecha.setText(response.getString("date"));
+                            ubicacion.setText(coords);
+                            Log.d("TEST: ", response.toString());
+
+                        } catch (JSONException e){
+                            Log.d("Exception", e.getMessage());
+                        }
                     }
                 },
                 new Response.ErrorListener() {
@@ -73,8 +88,6 @@ public class DetalleReporteActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
     }
-
-
 
 
 
