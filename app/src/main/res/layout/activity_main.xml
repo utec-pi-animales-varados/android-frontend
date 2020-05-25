@@ -21,7 +21,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reporte animales varados"
+            android:text="¡BIENVENIDO!"
             android:textColor="#000"
             android:textSize="25dp"
             />
@@ -41,9 +41,9 @@
             android:textColor="#FFF"
             android:gravity="center"
             android:background="@drawable/corners_buttons3"
-            android:id="@+id/go_register"
+            android:id="@+id/go_cuenta"
             android:textSize="20sp"
-            android:text="Registrate">
+            android:text="Ingresar con una cuenta">
         </Button>
 
         </LinearLayout>
@@ -59,9 +59,9 @@
             android:textColor="#FFF"
             android:gravity="center"
             android:background="@drawable/corners_buttons3"
-            android:id="@+id/go_login"
+            android:id="@+id/go_invitado"
             android:textSize="20sp"
-            android:text="Ingresa a tu cuenta">
+            android:text="Ingresar como invitado">
         </Button>
 
         </LinearLayout>

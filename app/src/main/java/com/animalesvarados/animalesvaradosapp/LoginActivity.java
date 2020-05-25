@@ -101,14 +101,4 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /*
-    private void goToExperienciasActivity(int user_id,String username,String nombre) {
-        Intent intent = new Intent(this, ExperienciasActivity.class);
-        intent.putExtra("user_id",user_id);
-        intent.putExtra("username",username);
-        intent.putExtra("nombre",nombre);
-        startActivity(intent);
-    }
-
-     */
 }
