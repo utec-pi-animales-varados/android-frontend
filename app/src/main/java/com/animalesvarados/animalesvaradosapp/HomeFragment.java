@@ -1,6 +1,7 @@
 package com.animalesvarados.animalesvaradosapp;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -68,8 +69,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.activity_maps, container, false);
 
-        checkUserLocationPermission();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager fm = getFragmentManager();
@@ -90,44 +89,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        MapsInitializer.initialize(getContext());
         mMap = googleMap;
 
-        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
-        }
-    }
-
-    public boolean checkUserLocationPermission(){
-        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),Manifest.permission.ACCESS_FINE_LOCATION)){
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, Request_User_Location_Code);
-            }
-            return false;
-        } else{
-            return true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case Request_User_Location_Code:
-                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                        if(googleApiClient == null){
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-                } else {
-                    Toast.makeText(getContext(),"Permission Denied",Toast.LENGTH_SHORT).show();
-                }
-                return;
-        }
+        buildGoogleApiClient();
+        mMap.setMyLocationEnabled(true);
     }
 
     protected synchronized void buildGoogleApiClient(){
@@ -158,11 +123,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
 
-        if(googleApiClient != null){
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        }
+        LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
     }
 
+    @SuppressLint("Assert")
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         locationRequest = new LocationRequest();
@@ -170,30 +134,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Google
         locationRequest.setFastestInterval(1100);
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
-        Location location = null;
-
-        if(currentUserLocationMarker != null){
-            currentUserLocationMarker.remove();
-        }
-
-        LatLng latlng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latlng);
-        markerOptions.title("user Current Location");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-
-        currentUserLocationMarker = mMap.addMarker(markerOptions);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-        mMap.animateCamera(CameraUpdateFactory.zoomBy(12));
-
-        if(googleApiClient != null){
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-        }
-
-        if(ContextCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-        }
-
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
     }
 
     @Override
