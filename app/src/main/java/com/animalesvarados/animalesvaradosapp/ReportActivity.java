@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.net.Uri;
 
 import android.os.FileUtils;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -52,6 +55,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -75,7 +81,11 @@ public class ReportActivity extends AppCompatActivity {
 
     final int PICK_IMAGE = 42069;
     Uri uri;
-    ArrayList<File> imgLocation = new ArrayList<>();
+    ArrayList<byte[]> imgLocation = new ArrayList<>();
+    Bitmap bitmap;
+    int imgCondVar = 0;
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
 
     public Activity getActivity(){
         return this;
@@ -95,13 +105,14 @@ public class ReportActivity extends AppCompatActivity {
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE},1);
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED)
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            return;
+            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE},1);
         }
 
         try {
@@ -207,9 +218,7 @@ public class ReportActivity extends AppCompatActivity {
     public void addImg(View v)
     {
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent,PICK_IMAGE);
 
     }
@@ -218,47 +227,96 @@ public class ReportActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode,resultCode,data);
+        byte[] b;
 
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK)
         {
+            Uri uri = data.getData();
+            String[] filepath = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(uri,filepath,null,null,null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filepath[0]);
+            String picPath = cursor.getString(columnIndex);
+            cursor.close();
+            Log.d("ABSOLUTE PATH",picPath);
 
-            File file = new File(data.getData().getPath());
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+                b = baos.toByteArray();
+                imgLocation.add(b);
+                lock.lock();
+                imgCondVar+=1;
+                lock.unlock();
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 
-            imgLocation.add(file);
+
+
+
         }
 
     }
 
     public ArrayList<String> getImgLinks(){
 
-        ArrayList<String> images = new ArrayList<>();
+        final ArrayList<String> images = new ArrayList<>();
+        RequestQueue rq = Volley.newRequestQueue(this);
+        int socketTimeout = 30000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
 
-        //TODO Seleccionar las imagenes y hacer un post por cada una (iteras sobre el arreglo de imagenes global)
+        for(byte[] img : imgLocation) {
 
-        for(File file : imgLocation) {
-            OkHttpClient client = new OkHttpClient().newBuilder()
-                    .build();
-            MediaType mediaType = MediaType.parse("text/plain");
-            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("image", "image.png",
-                            RequestBody.create(MediaType.parse("application/octet-stream"),
-                                    file))
-                    .build();
+            final byte[] innerImg = img;
 
-            okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(Constant.DB_URL.concat("/uploadImagen"))
-                    .method("POST", body)
-                    .addHeader("Authorization", "Bearer ".concat(Constant.jwt))
-                    .build();
+            String url = Constant.DB_URL.concat("/uploadImagen");
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
+                    new Response.Listener<NetworkResponse>() {
+                        @Override
+                        public void onResponse(NetworkResponse response) {
+                            String obj = new String(response.data);
+                            Log.d("UPLOAD SUCCESS", obj.toString());
+                            images.add(obj);
+                            lock.lock();
+                            imgCondVar -=1;
+                            if(imgCondVar == 0) condition.signal();
+                            lock.unlock();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            lock.lock();
+                            imgCondVar -=1;
+                            if(imgCondVar == 0) condition.signal();
+                            lock.unlock();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("Authorization", "Bearer ".concat(Constant.jwt));
+                    return map;
+                }
 
-            try {
-                okhttp3.Response response = client.newCall(request).execute();
-                String s = response.body().string();
-                Log.d("Image upload response", s);
-            } catch (Exception e) {
-                Log.d("Error","Image upload error");
-                e.printStackTrace();
-            }
+                @Override
+                protected Map<String, DataPart> getByteData() throws AuthFailureError {
+                    Map<String, DataPart> params = new HashMap<>();
+
+                    params.put("image", new DataPart("imgUp.png", innerImg));
+
+                    return params;
+                }
+            };
+
+            volleyMultipartRequest.setRetryPolicy(policy);
+            rq.add(volleyMultipartRequest);
         }
 
         return images;
@@ -280,7 +338,7 @@ public class ReportActivity extends AppCompatActivity {
         EditText view = (EditText)findViewById(R.id.txtComentario);
         String comment = view.getText().toString();
 
-        //picture URLs TODO Hacer post con las imagenes a /uploadFiles y añadir el response a parameters
+        //picture URLs
 
         JSONArray urls = new JSONArray();
         ArrayList<String> url_list = getImgLinks();
@@ -289,8 +347,6 @@ public class ReportActivity extends AppCompatActivity {
         {
             urls.put(u);
         }
-
-        //TODO END ======================================================================================
 
         //animal id
         final JSONObject animal = new JSONObject();
@@ -357,6 +413,15 @@ public class ReportActivity extends AppCompatActivity {
 
         Log.d("param",parameters.toString());
 
+        while(imgCondVar > 0) {
+            try {
+                condition.await();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
                 url,
@@ -368,13 +433,14 @@ public class ReportActivity extends AppCompatActivity {
                     }
                 }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                showMessage("Error posting report.");
-                error.printStackTrace();
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showMessage("Error posting report.");
+                        error.printStackTrace();
 
-            }
-        }){
+                    }
+                }
+        ){
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
