@@ -85,7 +85,7 @@
                         android:ems="10"
                         android:text="+"
                         android:gravity="center"
-                        android:onClick="addImg"
+                        android:onClick="addImgGallery"
                         />
 
                     <EditText

@@ -50,6 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -79,13 +80,14 @@ public class ReportActivity extends AppCompatActivity {
     double longitude;
     double latitude;
 
-    final int PICK_IMAGE = 42069;
-    Uri uri;
+    final int PICK_IMAGE_GALLERY = 420;
+    final int PICK_IMAGE_CAMERA = 420;
     ArrayList<byte[]> imgLocation = new ArrayList<>();
     Bitmap bitmap;
-    int imgCondVar = 0;
-    private Lock lock = new ReentrantLock();
-    private Condition condition = lock.newCondition();
+    byte[] b;
+    ArrayList<String> images = new ArrayList<>();
+    private RequestQueue rq;
+
 
     public Activity getActivity(){
         return this;
@@ -101,6 +103,7 @@ public class ReportActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.main_recycler_view);
         //mAdapter = null;
         //mRecyclerView.setAdapter(mAdapter);
+        rq = Volley.newRequestQueue(this);
 
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -215,11 +218,19 @@ public class ReportActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    public void addImg(View v)
+    public void addImgGallery(View v)
     {
 
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent,PICK_IMAGE);
+        startActivityForResult(intent,PICK_IMAGE_GALLERY);
+
+    }
+
+    public void addImgCamera(View v)
+    {
+
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent,PICK_IMAGE_CAMERA);
 
     }
 
@@ -227,9 +238,8 @@ public class ReportActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode,resultCode,data);
-        byte[] b;
 
-        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK)
+        if(requestCode == PICK_IMAGE_GALLERY && resultCode == RESULT_OK)
         {
             Uri uri = data.getData();
             String[] filepath = {MediaStore.Images.Media.DATA};
@@ -245,33 +255,20 @@ public class ReportActivity extends AppCompatActivity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
                 b = baos.toByteArray();
-                imgLocation.add(b);
-                lock.lock();
-                imgCondVar+=1;
-                lock.unlock();
+
             }
             catch (Exception e)
             {
                 e.printStackTrace();
             }
 
-
-
+            getImgLinks();
 
         }
 
     }
 
-    public ArrayList<String> getImgLinks(){
-
-        final ArrayList<String> images = new ArrayList<>();
-        RequestQueue rq = Volley.newRequestQueue(this);
-        int socketTimeout = 30000;
-        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-
-        for(byte[] img : imgLocation) {
-
-            final byte[] innerImg = img;
+    public void getImgLinks(){
 
             String url = Constant.DB_URL.concat("/uploadImagen");
             VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
@@ -281,20 +278,12 @@ public class ReportActivity extends AppCompatActivity {
                             String obj = new String(response.data);
                             Log.d("UPLOAD SUCCESS", obj.toString());
                             images.add(obj);
-                            lock.lock();
-                            imgCondVar -=1;
-                            if(imgCondVar == 0) condition.signal();
-                            lock.unlock();
                         }
                     },
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             error.printStackTrace();
-                            lock.lock();
-                            imgCondVar -=1;
-                            if(imgCondVar == 0) condition.signal();
-                            lock.unlock();
                         }
                     }
             ) {
@@ -309,30 +298,25 @@ public class ReportActivity extends AppCompatActivity {
                 protected Map<String, DataPart> getByteData() throws AuthFailureError {
                     Map<String, DataPart> params = new HashMap<>();
 
-                    params.put("image", new DataPart("imgUp.png", innerImg));
+                    params.put("image", new DataPart("imgUp.png", b));
 
                     return params;
                 }
             };
 
-            volleyMultipartRequest.setRetryPolicy(policy);
             rq.add(volleyMultipartRequest);
-        }
-
-        return images;
 
     }
 
 
     public void postReport(){
         String url = Constant.DB_URL.concat("/reportes");
-        RequestQueue queue = Volley.newRequestQueue(this);
         final JSONObject parameters = new JSONObject();
 
         //PARAMS========================
 
         //date
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String date = Clock.systemDefaultZone().instant().toString();
 
         //comment
         EditText view = (EditText)findViewById(R.id.txtComentario);
@@ -341,9 +325,8 @@ public class ReportActivity extends AppCompatActivity {
         //picture URLs
 
         JSONArray urls = new JSONArray();
-        ArrayList<String> url_list = getImgLinks();
 
-        for(String u : url_list)
+        for(String u : images)
         {
             urls.put(u);
         }
@@ -406,21 +389,13 @@ public class ReportActivity extends AppCompatActivity {
             parameters.put("animal",animal);
             parameters.put("usuario",usr);
             parameters.put("respuestas",respuestas);
+            parameters.put("longitudAnimal",100);
         }
         catch (Exception e){
             e.printStackTrace();
         }
 
         Log.d("param",parameters.toString());
-
-        while(imgCondVar > 0) {
-            try {
-                condition.await();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.POST,
@@ -448,7 +423,7 @@ public class ReportActivity extends AppCompatActivity {
                 return params;
             }
         };
-        queue.add(jsonObjectRequest);
+        rq.add(jsonObjectRequest);
     }
 
 
