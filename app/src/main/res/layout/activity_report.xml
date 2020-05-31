@@ -77,16 +77,35 @@
                     android:orientation="vertical"
                     >
 
-                    <Button
-                        android:id="@+id/txtURL"
+                    <LinearLayout
                         android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                    <Button
+                        android:id="@+id/btnCamera"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:backgroundTint="#FFF"
                         android:ems="10"
-                        android:text="+"
+                        android:text="Camara"
+                        android:gravity="center"
+                        android:onClick="addImgCamera"
+                        />
+
+                    <Button
+                        android:id="@+id/btnGallery"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="#FFF"
+                        android:ems="10"
+                        android:text="Galeria"
                         android:gravity="center"
                         android:onClick="addImgGallery"
                         />
+
+                    </LinearLayout>
 
                     <EditText
                         android:id="@+id/txtComentario"

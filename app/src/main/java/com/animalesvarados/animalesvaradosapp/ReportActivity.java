@@ -12,7 +12,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.net.Uri;
 
+import android.os.Environment;
 import android.os.FileUtils;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -228,8 +230,11 @@ public class ReportActivity extends AppCompatActivity {
 
     public void addImgCamera(View v)
     {
-
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File f = new File(android.os.Environment.getExternalStorageDirectory(),"temp.jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(f));
         startActivityForResult(intent,PICK_IMAGE_CAMERA);
 
     }
@@ -259,6 +264,32 @@ public class ReportActivity extends AppCompatActivity {
             }
             catch (Exception e)
             {
+                e.printStackTrace();
+            }
+
+        }
+        else if(requestCode == PICK_IMAGE_CAMERA && resultCode == RESULT_OK)
+        {
+            File f = new File(Environment.getExternalStorageDirectory().toString());
+            for(File temp : f.listFiles())
+            {
+                if (temp.getName().equals("temp.jpg"))
+                {
+                    f = temp;
+                    break;
+                }
+            }
+            try {
+                Bitmap bitmap;
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+                b = baos.toByteArray();
+
+            }
+            catch (Exception e) {
                 e.printStackTrace();
             }
 
