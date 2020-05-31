@@ -80,8 +80,8 @@ public class ReportActivity extends AppCompatActivity {
     double longitude;
     double latitude;
 
-    final int PICK_IMAGE_GALLERY = 420;
-    final int PICK_IMAGE_CAMERA = 420;
+    final int PICK_IMAGE_GALLERY = 2;
+    final int PICK_IMAGE_CAMERA = 1;
     ArrayList<byte[]> imgLocation = new ArrayList<>();
     Bitmap bitmap;
     byte[] b;
