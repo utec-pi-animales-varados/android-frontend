@@ -178,6 +178,11 @@ public class ReportActivity extends AppCompatActivity {
         getQuestions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rq = null;
+    }
 
     public void onClickBtnSend(View v) {
         if(animalId != 0) {
@@ -287,7 +292,6 @@ public class ReportActivity extends AppCompatActivity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
                 b = baos.toByteArray();
-
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -335,6 +339,9 @@ public class ReportActivity extends AppCompatActivity {
                 }
             };
 
+            int socketTimeout = 30000;
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+            volleyMultipartRequest.setRetryPolicy(policy);
             rq.add(volleyMultipartRequest);
 
     }
