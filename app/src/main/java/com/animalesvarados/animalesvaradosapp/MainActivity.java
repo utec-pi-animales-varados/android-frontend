@@ -30,6 +30,8 @@ import android.provider.Settings.Secure;
 @SuppressLint("Registered")
 public class MainActivity extends AppCompatActivity {
 
+    int authenticateNumberOfIntents = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,8 +113,11 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        Log.d("Error; ", "LLAMAR REGISTER");
-                        RegistrarInvitado();
+                        if(authenticateNumberOfIntents < 3 ) {
+                            Log.d("Error; ", "LLAMAR REGISTER");
+                            RegistrarInvitado();
+                            authenticateNumberOfIntents++;
+                        }
                     }
                 }
         );
