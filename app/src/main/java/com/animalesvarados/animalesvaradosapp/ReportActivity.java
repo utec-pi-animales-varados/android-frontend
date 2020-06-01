@@ -6,13 +6,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.net.Uri;
 
+import android.os.Environment;
 import android.os.FileUtils;
+import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -47,11 +52,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -73,9 +82,14 @@ public class ReportActivity extends AppCompatActivity {
     double longitude;
     double latitude;
 
-    final int PICK_IMAGE = 42069;
-    Uri uri;
-    ArrayList<File> imgLocation = new ArrayList<>();
+    final int PICK_IMAGE_GALLERY = 2;
+    final int PICK_IMAGE_CAMERA = 1;
+    ArrayList<byte[]> imgLocation = new ArrayList<>();
+    Bitmap bitmap;
+    byte[] b;
+    ArrayList<String> images = new ArrayList<>();
+    private RequestQueue rq;
+
 
     public Activity getActivity(){
         return this;
@@ -91,17 +105,19 @@ public class ReportActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.main_recycler_view);
         //mAdapter = null;
         //mRecyclerView.setAdapter(mAdapter);
+        rq = Volley.newRequestQueue(this);
 
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE},1);
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED)
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            return;
+            ActivityCompat.requestPermissions(this,new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_NETWORK_STATE},1);
         }
 
         try {
@@ -162,6 +178,11 @@ public class ReportActivity extends AppCompatActivity {
         getQuestions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        rq = null;
+    }
 
     public void onClickBtnSend(View v) {
         if(animalId != 0) {
@@ -204,13 +225,22 @@ public class ReportActivity extends AppCompatActivity {
         queue.add(request);
     }
 
-    public void addImg(View v)
+    public void addImgGallery(View v)
     {
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent,PICK_IMAGE);
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent,PICK_IMAGE_GALLERY);
+
+    }
+
+    public void addImgCamera(View v)
+    {
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File f = new File(android.os.Environment.getExternalStorageDirectory(),"temp.jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(f));
+        startActivityForResult(intent,PICK_IMAGE_CAMERA);
 
     }
 
@@ -219,78 +249,125 @@ public class ReportActivity extends AppCompatActivity {
     {
         super.onActivityResult(requestCode,resultCode,data);
 
-        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK)
+        if(requestCode == PICK_IMAGE_GALLERY && resultCode == RESULT_OK)
         {
+            Uri uri = data.getData();
+            String[] filepath = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(uri,filepath,null,null,null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filepath[0]);
+            String picPath = cursor.getString(columnIndex);
+            cursor.close();
+            Log.d("ABSOLUTE PATH",picPath);
 
-            File file = new File(data.getData().getPath());
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+                b = baos.toByteArray();
 
-            imgLocation.add(file);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+        else if(requestCode == PICK_IMAGE_CAMERA && resultCode == RESULT_OK)
+        {
+            File f = new File(Environment.getExternalStorageDirectory().toString());
+            for(File temp : f.listFiles())
+            {
+                if (temp.getName().equals("temp.jpg"))
+                {
+                    f = temp;
+                    break;
+                }
+            }
+            try {
+                Bitmap bitmap;
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),bitmapOptions);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG,100,baos);
+                b = baos.toByteArray();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            getImgLinks();
+
         }
 
     }
 
-    public ArrayList<String> getImgLinks(){
+    public void getImgLinks(){
 
-        ArrayList<String> images = new ArrayList<>();
+            String url = Constant.DB_URL.concat("/uploadImagen");
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
+                    new Response.Listener<NetworkResponse>() {
+                        @Override
+                        public void onResponse(NetworkResponse response) {
+                            String obj = new String(response.data);
+                            Log.d("UPLOAD SUCCESS", obj.toString());
+                            images.add(obj);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                        }
+                    }
+            ) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("Authorization", "Bearer ".concat(Constant.jwt));
+                    return map;
+                }
 
-        //TODO Seleccionar las imagenes y hacer un post por cada una (iteras sobre el arreglo de imagenes global)
+                @Override
+                protected Map<String, DataPart> getByteData() throws AuthFailureError {
+                    Map<String, DataPart> params = new HashMap<>();
 
-        for(File file : imgLocation) {
-            OkHttpClient client = new OkHttpClient().newBuilder()
-                    .build();
-            MediaType mediaType = MediaType.parse("text/plain");
-            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("image", "image.png",
-                            RequestBody.create(MediaType.parse("application/octet-stream"),
-                                    file))
-                    .build();
+                    params.put("image", new DataPart("imgUp.png", b));
 
-            okhttp3.Request request = new okhttp3.Request.Builder()
-                    .url(Constant.DB_URL.concat("/uploadImagen"))
-                    .method("POST", body)
-                    .addHeader("Authorization", "Bearer ".concat(Constant.jwt))
-                    .build();
+                    return params;
+                }
+            };
 
-            try {
-                okhttp3.Response response = client.newCall(request).execute();
-                String s = response.body().string();
-                Log.d("Image upload response", s);
-            } catch (Exception e) {
-                Log.d("Error","Image upload error");
-                e.printStackTrace();
-            }
-        }
-
-        return images;
+            int socketTimeout = 30000;
+            RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+            volleyMultipartRequest.setRetryPolicy(policy);
+            rq.add(volleyMultipartRequest);
 
     }
 
 
     public void postReport(){
         String url = Constant.DB_URL.concat("/reportes");
-        RequestQueue queue = Volley.newRequestQueue(this);
         final JSONObject parameters = new JSONObject();
 
         //PARAMS========================
 
         //date
-        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+        String date = Clock.systemDefaultZone().instant().toString();
 
         //comment
         EditText view = (EditText)findViewById(R.id.txtComentario);
         String comment = view.getText().toString();
 
-        //picture URLs TODO Hacer post con las imagenes a /uploadFiles y añadir el response a parameters
+        //picture URLs
 
         JSONArray urls = new JSONArray();
-        ArrayList<String> url_list = getImgLinks();
 
-        for(String u : url_list)
+        for(String u : images)
         {
             urls.put(u);
         }
-
-        //TODO END ======================================================================================
 
         //animal id
         final JSONObject animal = new JSONObject();
@@ -350,6 +427,7 @@ public class ReportActivity extends AppCompatActivity {
             parameters.put("animal",animal);
             parameters.put("usuario",usr);
             parameters.put("respuestas",respuestas);
+            parameters.put("longitudAnimal",100);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -368,13 +446,14 @@ public class ReportActivity extends AppCompatActivity {
                     }
                 }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                showMessage("Error posting report.");
-                error.printStackTrace();
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showMessage("Error posting report.");
+                        error.printStackTrace();
 
-            }
-        }){
+                    }
+                }
+        ){
             @Override
             public Map<String,String> getHeaders() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
@@ -382,7 +461,7 @@ public class ReportActivity extends AppCompatActivity {
                 return params;
             }
         };
-        queue.add(jsonObjectRequest);
+        rq.add(jsonObjectRequest);
     }
 
 
