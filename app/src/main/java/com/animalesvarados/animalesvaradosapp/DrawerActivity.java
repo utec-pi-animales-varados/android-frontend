@@ -91,7 +91,7 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     public void Go_reporte(){
-        Intent intent = new Intent(getActivity(), ReportActivity.class);
+        Intent intent = new Intent(getActivity(), HistorialReportesActivity.class);
         startActivity(intent);
     }
 

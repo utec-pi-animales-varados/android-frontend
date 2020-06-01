@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
                         {
                             Log.d("response","success");
                             Constant.jwt = response.getString("jwt");
-                            Log.d("jwt",Constant.jwt);
+                            Constant.userId = response.getInt("user_id");
                             Intent intent = new Intent(getActivity(),DrawerActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
@@ -104,5 +104,4 @@ public class LoginActivity extends AppCompatActivity {
         queue.add(request);
 
     }
-
 }
