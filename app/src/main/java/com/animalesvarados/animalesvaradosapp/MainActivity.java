@@ -53,9 +53,7 @@ public class MainActivity extends AppCompatActivity {
         //INGRESAR COMO INVITADO
         Log.d("Ingresando como invitado: ","true");
 
-        /*
-        Intent intent = new Intent(getActivity(), RegisterActivity.class);
+        Intent intent = new Intent(getActivity(), DrawerActivity.class);
         startActivity(intent);
-         */
     }
 }

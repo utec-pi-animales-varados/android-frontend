@@ -1,7 +1,9 @@
 package com.animalesvarados.animalesvaradosapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        //SharedPreferences prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
     }
 
     public void showMessage(String message) {
@@ -77,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             Constant.jwt = response.getString("jwt");
                             Log.d("jwt",Constant.jwt);
                             Intent intent = new Intent(getActivity(),DrawerActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         }
                         catch (JSONException e)
