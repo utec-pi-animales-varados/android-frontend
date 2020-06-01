@@ -6,23 +6,121 @@
     android:layout_height="match_parent"
     tools:context=".FirstFragment">
 
-    <Button
-        android:id="@+id/button_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_first" />
+    <LinearLayout
+        android:id="@+id/ChangePassLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="35dp">
 
-    <TextView
-        android:id="@+id/textview_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_first_fragment"
-        app:layout_constraintBottom_toTopOf="@id/button_first"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="42dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout4"
+            tools:layout_editor_absoluteX="0dp">
+
+            <TextView
+                android:layout_width="150pt"
+                android:layout_height="wrap_content"
+                android:text="\n Cambiar Contraseña\n"
+                android:textAlignment="center"
+                android:textColor="#293462"
+                android:textSize="30dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="243dp">
+
+            <EditText
+                android:id="@+id/c_actual"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:background="@drawable/corners_buttons2"
+                android:ems="15"
+                android:hint="Ingresa tu contraseña actual"
+                android:inputType="textPassword"
+                android:textAlignment="center"
+                android:textColor="#293462"
+                android:textColorHint="#ABB2B9" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+            tools:ignore="MissingConstraints"
+            tools:layout_editor_absoluteX="0dp">
+
+            <EditText
+                android:id="@+id/c_new"
+                android:layout_width="wrap_content"
+                android:layout_height="45dp"
+                android:background="@drawable/corners_buttons2"
+                android:ems="15"
+                android:hint="Nueva contraseña"
+                android:inputType="textPassword"
+                android:textAlignment="center"
+                android:textColor="#293462"
+                android:textColorHint="#B9ADB6B6" />
+        </LinearLayout>
+
+<!--        <LinearLayout-->
+<!--            android:id="@+id/linearLayout2"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="14dp"-->
+<!--            android:gravity="center"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"-->
+<!--            tools:ignore="MissingConstraints"-->
+<!--            tools:layout_editor_absoluteX="0dp">-->
+
+<!--            <EditText-->
+<!--                android:id="@+id/c_new2"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="45dp"-->
+<!--                android:background="@drawable/corners_buttons2"-->
+<!--                android:ems="15"-->
+<!--                android:hint="Repetir nueva contraseña"-->
+<!--                android:inputType="textPassword"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textColor="#293462"-->
+<!--                android:textColorHint="#B9ADB6B6" />-->
+<!--        </LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/btn_changePass"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:textColor="#FFF"
+                android:background="@drawable/corners_buttons3"
+                android:textSize="20sp"
+                android:text="Enviar">
+            </Button>
+
+        </LinearLayout>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

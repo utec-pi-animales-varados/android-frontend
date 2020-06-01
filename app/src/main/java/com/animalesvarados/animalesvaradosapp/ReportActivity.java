@@ -2,15 +2,22 @@ package com.animalesvarados.animalesvaradosapp;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.net.Uri;
 
+import android.os.FileUtils;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -36,12 +43,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 
 public class ReportActivity extends AppCompatActivity {
 
@@ -57,6 +72,10 @@ public class ReportActivity extends AppCompatActivity {
     Location final_loc;
     double longitude;
     double latitude;
+
+    final int PICK_IMAGE = 42069;
+    Uri uri;
+    ArrayList<File> imgLocation = new ArrayList<>();
 
     public Activity getActivity(){
         return this;
@@ -139,9 +158,7 @@ public class ReportActivity extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        Log.d("Setting manager","pre");
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Log.d("Setting manager","post");
         getQuestions();
     }
 
@@ -187,6 +204,67 @@ public class ReportActivity extends AppCompatActivity {
         queue.add(request);
     }
 
+    public void addImg(View v)
+    {
+
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent,PICK_IMAGE);
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode,resultCode,data);
+
+        if(requestCode == PICK_IMAGE && resultCode == RESULT_OK)
+        {
+
+            File file = new File(data.getData().getPath());
+
+            imgLocation.add(file);
+        }
+
+    }
+
+    public ArrayList<String> getImgLinks(){
+
+        ArrayList<String> images = new ArrayList<>();
+
+        //TODO Seleccionar las imagenes y hacer un post por cada una (iteras sobre el arreglo de imagenes global)
+
+        for(File file : imgLocation) {
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .build();
+            MediaType mediaType = MediaType.parse("text/plain");
+            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("image", "image.png",
+                            RequestBody.create(MediaType.parse("application/octet-stream"),
+                                    file))
+                    .build();
+
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(Constant.DB_URL.concat("/uploadImagen"))
+                    .method("POST", body)
+                    .addHeader("Authorization", "Bearer ".concat(Constant.jwt))
+                    .build();
+
+            try {
+                okhttp3.Response response = client.newCall(request).execute();
+                String s = response.body().string();
+                Log.d("Image upload response", s);
+            } catch (Exception e) {
+                Log.d("Error","Image upload error");
+                e.printStackTrace();
+            }
+        }
+
+        return images;
+
+    }
+
 
     public void postReport(){
         String url = Constant.DB_URL.concat("/reportes");
@@ -203,13 +281,16 @@ public class ReportActivity extends AppCompatActivity {
         String comment = view.getText().toString();
 
         //picture URLs TODO Hacer post con las imagenes a /uploadFiles y añadir el response a parameters
+
         JSONArray urls = new JSONArray();
-        view = (EditText)findViewById(R.id.txtURL);
-        String[] url_list = view.getText().toString().split(",");
+        ArrayList<String> url_list = getImgLinks();
+
         for(String u : url_list)
         {
             urls.put(u);
         }
+
+        //TODO END ======================================================================================
 
         //animal id
         final JSONObject animal = new JSONObject();

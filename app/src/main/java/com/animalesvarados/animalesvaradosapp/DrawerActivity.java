@@ -3,6 +3,7 @@ package com.animalesvarados.animalesvaradosapp;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import androidx.fragment.app.FragmentActivity;
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,10 @@ public class DrawerActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_slideshow:
                         Toast.makeText(getApplicationContext(),"Slideshow is selected", Toast.LENGTH_LONG).show();
+                        //prefs.edit().clear().apply();
+                        Intent j =new Intent(DrawerActivity.this, MainActivity.class);
+                        j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(j);
                         break;
                 }
 
