@@ -80,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                             Constant.jwt = response.getString("jwt");
                             Log.d("jwt",Constant.jwt);
                             Intent intent = new Intent(getActivity(),DrawerActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                         }
                         catch (JSONException e)
