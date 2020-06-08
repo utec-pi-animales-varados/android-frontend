@@ -59,7 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         // 2. Creating a message from user input data
         Map<String, Object> message = new HashMap<>();
-        message.put("deviceId","111111111111111");
+        message.put("deviceId",Constant.deviceId);
         message.put("name", name);
         message.put("lastName", lastname);
         message.put("email", email);
