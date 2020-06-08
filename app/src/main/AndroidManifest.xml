@@ -19,10 +19,14 @@
             android:parentActivityName=".DrawerActivity"
             android:label="@string/title_activity_gallery"
             android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".HistorialReportesActivity"
+            android:parentActivityName=".DrawerActivity"
+            android:label="List"
+            android:theme="@style/AppTheme"></activity>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".IngresoCuentaActivity" />
-        <activity android:name=".HistorialReportesActivity" />
         <activity android:name=".DetalleReporteActivity" />
         <activity
             android:name=".MainActivity"

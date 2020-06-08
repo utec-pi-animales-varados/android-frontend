@@ -49,7 +49,7 @@ public class DrawerActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_list)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -64,6 +64,11 @@ public class DrawerActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.nav_home:
                         Toast.makeText(getApplicationContext(),"Home is selected", Toast.LENGTH_LONG).show();
+                        break;
+                    case R.id.nav_list:
+                        Toast.makeText(getApplicationContext(),"List is selected", Toast.LENGTH_LONG).show();
+                        Intent k =new Intent(DrawerActivity.this, HistorialReportesActivity.class);
+                        startActivity(k);
                         break;
                     case R.id.nav_gallery:
                         Toast.makeText(getApplicationContext(),"Gallery is selected", Toast.LENGTH_LONG).show();
@@ -91,7 +96,7 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     public void Go_reporte(){
-        Intent intent = new Intent(getActivity(), HistorialReportesActivity.class);
+        Intent intent = new Intent(getActivity(), ReportActivity.class);
         startActivity(intent);
     }
 
