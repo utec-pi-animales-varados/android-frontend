@@ -22,13 +22,16 @@
 
     <Button
         android:id="@+id/ReportButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.Icon"
+        android:layout_width="110dp"
+        android:layout_height="63dp"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
         android:onClick="Go_reporte"
-        android:text="Reportar" />
+        android:text="Reportar"
+        android:textColor="#fff"
+        android:textSize="15dp" />
 
     <include layout="@layout/content_main" />
 
