@@ -77,6 +77,13 @@ public class DrawerActivity extends AppCompatActivity {
                         j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(j);
                         break;
+
+                    case R.id.nav_historial:
+                        Toast.makeText(getApplicationContext(),"Historial de reportes", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(getActivity(), HistorialReportesActivity.class);
+                        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        break;
                 }
 
                 drawer.closeDrawers();

@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //2.  Creating a message using user input
         Map<String, String> message = new HashMap<>();
-        message.put("username", username);
+        message.put("email", username);
         message.put("password", password);
 
         //3.  Converting the message object to JSON string (jsonify)
