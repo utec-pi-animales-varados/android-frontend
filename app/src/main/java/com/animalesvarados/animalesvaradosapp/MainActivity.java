@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.POST,
-                Constant.DB_URL.concat("/authenticate"),
+                Constant.DB_URL.concat("/authenticateGuest"),
                 jsonMessage,
                 new Response.Listener<JSONObject>() {
                     @Override
