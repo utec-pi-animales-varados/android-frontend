@@ -13,7 +13,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
-    <string name="menu_home">Reportes</string>
+    <string name="menu_home">Inicio</string>
+    <string name="menu_list">Reportes</string>
     <string name="menu_gallery">Cambiar contraseña</string>
     <string name="menu_slideshow">Cerrar Sesión</string>
 
