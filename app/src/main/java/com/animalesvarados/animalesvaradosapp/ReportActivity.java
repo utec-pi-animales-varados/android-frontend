@@ -401,7 +401,7 @@ public class ReportActivity extends AppCompatActivity {
         Log.d("respuestas",respuestas.toString());
 
         try {
-            usr.put("id","1");
+            usr.put("id",Constant.userId);
 
         }
         catch (Exception e) {

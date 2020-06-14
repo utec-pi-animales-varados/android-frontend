@@ -2,6 +2,7 @@ package com.animalesvarados.animalesvaradosapp;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +12,13 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +55,7 @@ public class HistorialReportesActivity extends AppCompatActivity{
 
     RecyclerView mRecyclerView;
     HistorialReportesAdapter mAdapter;
+    private TextView empty;
 
     public Activity getActivity(){
         return this;
@@ -63,6 +67,8 @@ public class HistorialReportesActivity extends AppCompatActivity{
         setContentView(R.layout.activity_historialreportes);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = findViewById(R.id.main_recycler_view);
+        empty = findViewById(R.id.empty_view);
+        empty.setVisibility(View.GONE);
     }
 
 
@@ -92,6 +98,7 @@ public class HistorialReportesActivity extends AppCompatActivity{
                     @Override
                     public void onResponse(JSONArray response) {
                         Log.d("Creating recycler view",response.toString());
+                        if(response.length() == 0 ) empty.setVisibility(View.VISIBLE);
                         mAdapter = new HistorialReportesAdapter(response, getActivity());
                         mRecyclerView.setAdapter(mAdapter);
                     }
@@ -108,6 +115,7 @@ public class HistorialReportesActivity extends AppCompatActivity{
             public Map<String,String> getHeaders() throws AuthFailureError {
                 Map<String,String> params = new HashMap<>();
                 params.put("Authorization","Bearer ".concat(Constant.jwt));
+                Log.d("JWT", Constant.jwt);
                 return params;
             }
         };
