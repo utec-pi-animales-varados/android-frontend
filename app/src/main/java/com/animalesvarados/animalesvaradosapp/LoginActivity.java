@@ -28,11 +28,24 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private SharedPreferenceConfig sharedPreferencesConfig;
+    EditText txtUsername;
+    EditText txtPassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        txtUsername = findViewById(R.id.txtUsername);
+        txtPassword = findViewById(R.id.txtPassword);
         //SharedPreferences prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+        sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+        if(sharedPreferencesConfig.read_login_status()){
+            startActivity(new Intent(this,DrawerActivity.class));
+            finish();
+        }
+
     }
 
     public void showMessage(String message) {
@@ -45,10 +58,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onBtnLoginClicked(View view){
         //1.  Getting username and password (from the view)
-        EditText txtUsername = (EditText)findViewById(R.id.txtUsername);
-        EditText txtPassword = (EditText)findViewById(R.id.txtPassword);
-        String username = txtUsername.getText().toString();
-        String password = txtPassword.getText().toString();
+        final String username = txtUsername.getText().toString();
+        final String password = txtPassword.getText().toString();
 
         Log.d("user",username);
         Log.d("password",password);
@@ -82,6 +93,8 @@ public class LoginActivity extends AppCompatActivity {
                             Intent intent = new Intent(getActivity(),DrawerActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
+                            sharedPreferencesConfig.login_status(true);
+                            finish();
                         }
                         catch (JSONException e)
                         {

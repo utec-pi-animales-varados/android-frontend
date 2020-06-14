@@ -29,7 +29,7 @@ import android.provider.Settings.Secure;
 
 @SuppressLint("Registered")
 public class MainActivity extends AppCompatActivity {
-
+    private SharedPreferenceConfig sharedPreferencesConfig;
     int authenticateNumberOfIntents = 0;
 
     @Override
@@ -37,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("Reporte animales varados");
+
+        sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+        if(sharedPreferencesConfig.read_login_status()){
+            startActivity(new Intent(this,DrawerActivity.class));
+            finish();
+        }
 
         final Button loginbtn = findViewById(R.id.go_cuenta);
         final Button regbtn = findViewById(R.id.go_invitado);

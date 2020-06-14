@@ -28,12 +28,13 @@ import androidx.fragment.app.FragmentActivity;
 public class DrawerActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private SharedPreferences prefs;
+    private SharedPreferenceConfig sharedPreferenceConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawer);
+        sharedPreferenceConfig=new SharedPreferenceConfig(getApplicationContext());
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -70,7 +71,7 @@ public class DrawerActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_slideshow:
                         Toast.makeText(getApplicationContext(),"Slideshow is selected", Toast.LENGTH_LONG).show();
-                        //prefs.edit().clear().apply();
+                        sharedPreferenceConfig.login_status(false);
                         Intent j =new Intent(DrawerActivity.this, MainActivity.class);
                         j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(j);
