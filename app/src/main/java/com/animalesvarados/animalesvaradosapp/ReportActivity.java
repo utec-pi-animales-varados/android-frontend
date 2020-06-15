@@ -132,7 +132,7 @@ public class ReportActivity extends AppCompatActivity {
         }
         else if(net_loc != null)
         {
-            final_loc = gps;
+            final_loc = net_loc;
             latitude = final_loc.getLatitude();
             longitude = final_loc.getLongitude();
         }
