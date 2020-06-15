@@ -47,6 +47,7 @@ public class DetalleReporteActivity extends AppCompatActivity {
         final TextView animal = findViewById(R.id.animal);
         final TextView fecha = findViewById(R.id.fecha);
         final TextView ubicacion = findViewById(R.id.ubicacion);
+        final TextView imagen = findViewById(R.id.imagenes);
 
         JSONObject jsonMessage = new JSONObject();
 
@@ -59,9 +60,16 @@ public class DetalleReporteActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             String coords = response.getString("latitude")+", "+response.getString("longitude");
+                            JSONArray firstImage = response.getJSONArray("picturesURLs");
                             animal.setText(response.getString("id"));
                             fecha.setText(response.getString("date"));
                             ubicacion.setText(coords);
+                            imagen.setText(firstImage.getString(0));
+
+                            //Obtener imagen
+                            getImage(firstImage.getString(0));
+
+                            //Console Log
                             Log.d("TEST: ", response.toString());
 
                         } catch (JSONException e){
@@ -88,6 +96,59 @@ public class DetalleReporteActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(request);
     }
+
+
+
+    public void getImage(String path){
+
+        JSONObject jsonMessage = new JSONObject();
+
+        try{
+            jsonMessage.put("path", path);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                Constant.DB_URL.concat("/imagen"),
+                jsonMessage,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("RESPONSE", response.toString());
+                        /*
+                        try {
+                        } catch (JSONException e){
+                            Log.d("Exception", e.getMessage());
+                        }
+                        */
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        //TODO Qué hacer cuando ocurra un error
+                    }
+                }
+        ){
+            @Override
+            public Map<String,String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<>();
+                params.put("Authorization","Bearer ".concat(Constant.jwt));
+                return params;
+            }
+        };
+
+        //5. Send Request to the Server
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(request);
+    }
+
+
+
+
+
 
 
 
