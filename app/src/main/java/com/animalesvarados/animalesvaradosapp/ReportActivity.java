@@ -364,12 +364,6 @@ public class ReportActivity extends AppCompatActivity {
             urls.put(u);
         }
 
-        //animal id
-        final JSONObject animal = new JSONObject();
-
-        //user id (temp)
-        final JSONObject usr = new JSONObject();
-
         //respuestas
         JSONArray respuestas = new JSONArray();
 
@@ -400,18 +394,11 @@ public class ReportActivity extends AppCompatActivity {
 
         Log.d("respuestas",respuestas.toString());
 
-        try {
-            usr.put("id",Constant.userId);
-
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
         //parse into json
 
         try {
-            animal.put("id",animalId);
+            parameters.put("animalid",animalId);
+            parameters.put("usuarioid", Constant.userId);
             parameters.put("date",date);
             parameters.put("latitude",latitude);
             if(!comment.equals("")) {
@@ -419,8 +406,6 @@ public class ReportActivity extends AppCompatActivity {
             }
             parameters.put("longitude",longitude);
             parameters.put("picturesURLs",urls);
-            parameters.put("animal",animal);
-            parameters.put("usuario",usr);
             parameters.put("respuestas",respuestas);
             parameters.put("longitudAnimal",100);
         }
