@@ -61,6 +61,10 @@ public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull ReportAdapter.ViewHolder holder,final int position) {
+        if(position == 0){
+            holder.itemView.setVisibility(View.GONE);
+            return;
+        }
         try{
             JSONObject element = elements.getJSONObject(position);
             answers.put(position,"");

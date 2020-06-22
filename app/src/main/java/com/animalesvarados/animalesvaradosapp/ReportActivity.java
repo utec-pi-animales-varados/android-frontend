@@ -23,7 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -96,12 +99,10 @@ public class ReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //String username = getIntent().getExtras().get("username").toString();
         mRecyclerView = findViewById(R.id.main_recycler_view);
-        //mAdapter = null;
-        //mRecyclerView.setAdapter(mAdapter);
         rq = Volley.newRequestQueue(this);
-
+        SeekBar seekBar = findViewById(R.id.slider_bar);
+        seekBar.setOnSeekBarChangeListener(sliderListener);
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -197,6 +198,10 @@ public class ReportActivity extends AppCompatActivity {
                 new Response.Listener<JSONArray>() {
                     @Override
                     public void onResponse(JSONArray response) {
+                            if(response.length() > 0){
+                                LinearLayout slider_layout = findViewById(R.id.slider_layout);
+                                slider_layout.setVisibility(View.VISIBLE);
+                            }
                             Log.d("Creating recycler view",response.toString());
                             mAdapter = new ReportAdapter(response, getActivity());
                             mRecyclerView.setAdapter(mAdapter);
@@ -369,25 +374,36 @@ public class ReportActivity extends AppCompatActivity {
 
         HashMap<Integer,String> answers = mAdapter.getAnswers();
 
-        JSONObject r;
-        JSONObject p;
+        JSONObject p = new JSONObject();
+        JSONObject r = new JSONObject();
+
+        SeekBar seekBar = findViewById(R.id.slider_bar);
+        try {
+            p.put("id", (1));
+            r.put("textoRespuesta", String.valueOf(seekBar.getProgress()));
+            r.put("pregunta", p);
+            respuestas.put(r);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for(Map.Entry<Integer,String> entry: answers.entrySet())
         {
-            if(!entry.getValue().equals("")){
-                p = new JSONObject();
-                r = new JSONObject();
-                try{
-                    Log.d((("Entry " + (entry.getKey() + 1))),entry.getValue());
-                    p.put("id",(entry.getKey()+1));
-                    r.put("textoRespuesta",entry.getValue());
-                    r.put("pregunta",p);
-                    respuestas.put(r);
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
+            if(entry.getKey() > 0){
+                if (!entry.getValue().equals("")) {
+                    p = new JSONObject();
+                    r = new JSONObject();
+                    try {
+                        Log.d((("Entry " + (entry.getKey() + 1))), entry.getValue());
+                        p.put("id", (entry.getKey() + 1));
+                        r.put("textoRespuesta", entry.getValue());
+                        r.put("pregunta", p);
+                        respuestas.put(r);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
+                }
             }
 
         }
@@ -481,6 +497,30 @@ public class ReportActivity extends AppCompatActivity {
             stringRequest.setRetryPolicy(policy);
             requestQueue.add(stringRequest);
         }
+
+        SeekBar.OnSeekBarChangeListener sliderListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                TextView slider = findViewById(R.id.slider_text);
+                if(progress == 21){
+                    slider.setText("Número de animales: 20+");
+                }
+                else{
+                    slider.setText("Número de animales: " + progress);
+                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        };
 
 
 
