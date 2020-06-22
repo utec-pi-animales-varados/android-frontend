@@ -25,6 +25,8 @@
 
     <string name="login_shared_preference">com.animalesvarados.animalesvaradosapp_shared_preference</string>
     <string name="login_status_shared_preference">com.animalesvarados.animalesvaradosapp_login_shared_preference</string>
+    <string name="user_email">com.animalesvarados.animalesvaradosapp_login_shared_preference</string>
+    <string name="user_name">com.animalesvarados.animalesvaradosapp_login_shared_preference</string>
     <string name="username">christian</string>
     <string name="password">123</string>
 </resources>
