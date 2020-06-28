@@ -503,7 +503,7 @@ public class ReportActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 TextView slider = findViewById(R.id.slider_text);
                 if(progress == 21){
-                    slider.setText("Número de animales: 20+");
+                    slider.setText("Varamiento masivo");
                 }
                 else{
                     slider.setText("Número de animales: " + progress);

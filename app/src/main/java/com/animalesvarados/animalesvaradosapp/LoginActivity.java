@@ -83,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        //TODO Qué hacer cuando el server responda
                         showMessage("Authorized!");
                         try
                         {
@@ -94,6 +93,8 @@ public class LoginActivity extends AppCompatActivity {
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
                             sharedPreferencesConfig.login_status(true);
+                            sharedPreferencesConfig.saveUserEmail(username);
+                            sharedPreferencesConfig.saveUserName(" ".concat(response.getString("firstName")).concat(" ").concat(response.getString("lastName")));
                             finish();
                         }
                         catch (JSONException e)

@@ -145,7 +145,7 @@
                     android:id="@+id/slider_bar"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:max="21"
+                    android:max="101"
                     android:progress="1"
                     android:min="1"
                     android:progressTint="@android:color/white"

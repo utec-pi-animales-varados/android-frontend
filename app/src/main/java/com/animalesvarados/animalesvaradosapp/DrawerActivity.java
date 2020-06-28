@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -52,6 +53,14 @@ public class DrawerActivity extends AppCompatActivity {
 
         navigationView.bringToFront();
 
+        View headerView = navigationView.getHeaderView(0);
+        TextView user = headerView.findViewById(R.id.user_name);
+        user.setText("Bienvenido"+sharedPreferenceConfig.getUserName());
+
+        TextView email = headerView.findViewById(R.id.user_email);
+        email.setText(sharedPreferenceConfig.getUserEmail());
+
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -72,6 +81,8 @@ public class DrawerActivity extends AppCompatActivity {
                     case R.id.nav_slideshow:
                         Toast.makeText(getApplicationContext(),"Slideshow is selected", Toast.LENGTH_LONG).show();
                         sharedPreferenceConfig.login_status(false);
+                        sharedPreferenceConfig.saveUserName("!");
+                        sharedPreferenceConfig.saveUserEmail("");
                         Intent j =new Intent(DrawerActivity.this, MainActivity.class);
                         j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(j);
