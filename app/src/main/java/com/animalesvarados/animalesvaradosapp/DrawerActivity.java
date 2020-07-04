@@ -2,12 +2,14 @@ package com.animalesvarados.animalesvaradosapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

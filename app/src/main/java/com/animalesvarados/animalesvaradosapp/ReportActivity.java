@@ -85,7 +85,7 @@ public class ReportActivity extends AppCompatActivity {
     ArrayList<String> images = new ArrayList<>();
     private RequestQueue rq;
 
-
+    private Button button;
     public Activity getActivity(){
         return this;
     }
@@ -95,6 +95,18 @@ public class ReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+        if(!sharedPreferencesConfig.read_login_status()){
+            button = (Button) findViewById(R.id.btnLogin);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openDialog();
+                }
+            });
+        }
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //String username = getIntent().getExtras().get("username").toString();
         mRecyclerView = findViewById(R.id.main_recycler_view);
@@ -482,6 +494,9 @@ public class ReportActivity extends AppCompatActivity {
             requestQueue.add(stringRequest);
         }
 
-
+    public void openDialog(){
+        DialogScreen exampledialog = new DialogScreen();
+        exampledialog.show(getSupportFragmentManager(), "example dialog");
+    }
 
 }
