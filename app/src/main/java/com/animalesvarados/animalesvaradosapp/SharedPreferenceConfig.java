@@ -20,7 +20,8 @@ public class SharedPreferenceConfig {
 
     public boolean read_login_status(){
         boolean status=false;
-        status=sharedPreferences.getBoolean("login_status_shared_preference",false);
+        status=sharedPreferences.getBoolean(context.getResources().getString(R.string.login_status_shared_preference),false);
+        //status=sharedPreferences.getBoolean("login_status_shared_preference",false);
         return status;
     }
 
@@ -47,4 +48,5 @@ public class SharedPreferenceConfig {
         email =sharedPreferences.getString("user_email","");
         return email;
     }
+
 }
