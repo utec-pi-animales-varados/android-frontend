@@ -98,17 +98,6 @@ public class ReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
-
-        if(!sharedPreferencesConfig.read_login_status()){
-            button = (Button) findViewById(R.id.btnLogin);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    openDialog();
-                }
-            });
-        }
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mRecyclerView = findViewById(R.id.main_recycler_view);
@@ -451,6 +440,18 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         showMessage("Report posted!");
+                        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+                        if(!sharedPreferencesConfig.read_login_status()){
+                            button = (Button) findViewById(R.id.btnLogin);
+                            button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    openDialog();
+                                }
+                            });
+                        }
+
                     }
                 }, new Response.ErrorListener() {
 
