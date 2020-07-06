@@ -527,7 +527,7 @@ public class ReportActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             TextView slider = findViewById(R.id.slider_text);
-            if(progress == 21){
+            if(progress == 101){
                 slider.setText("Varamiento masivo");
             }
             else{
