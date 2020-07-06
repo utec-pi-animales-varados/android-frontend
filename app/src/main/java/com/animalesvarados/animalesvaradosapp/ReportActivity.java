@@ -87,6 +87,7 @@ public class ReportActivity extends AppCompatActivity {
     byte[] b;
     ArrayList<String> images = new ArrayList<>();
     private RequestQueue rq;
+    private ArrayList<Integer> preguntaIds = new ArrayList<>();
 
     private Button button;
     public Activity getActivity(){
@@ -200,6 +201,15 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONArray response) {
                             if(response.length() > 0){
+                                for(int pId = 0 ; pId < response.length() ; pId ++){
+                                    try {
+                                        preguntaIds.add(response.getJSONObject(pId).getInt("id"));
+                                    }
+                                    catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
+
+                                }
                                 LinearLayout slider_layout = findViewById(R.id.slider_layout);
                                 slider_layout.setVisibility(View.VISIBLE);
                             }
@@ -380,7 +390,7 @@ public class ReportActivity extends AppCompatActivity {
 
         SeekBar seekBar = findViewById(R.id.slider_bar);
         try {
-            p.put("id", (1));
+            p.put("id", (preguntaIds.get(0)));
             r.put("textoRespuesta", String.valueOf(seekBar.getProgress()));
             r.put("pregunta", p);
             respuestas.put(r);
@@ -396,7 +406,7 @@ public class ReportActivity extends AppCompatActivity {
                     r = new JSONObject();
                     try {
                         Log.d((("Entry " + (entry.getKey() + 1))), entry.getValue());
-                        p.put("id", (entry.getKey() + 1));
+                        p.put("id", (preguntaIds.get(entry.getKey())));
                         r.put("textoRespuesta", entry.getValue());
                         r.put("pregunta", p);
                         respuestas.put(r);
@@ -429,7 +439,8 @@ public class ReportActivity extends AppCompatActivity {
         catch (Exception e){
             e.printStackTrace();
         }
-
+        Log.d("deviceId",Constant.deviceId);
+        Log.d("jwt",Constant.jwt);
         Log.d("param",parameters.toString());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
@@ -440,6 +451,14 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         showMessage("Report posted!");
+
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showMessage("Error posting report.");
                         SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
 
                         if(!sharedPreferencesConfig.read_login_status()){
@@ -451,13 +470,6 @@ public class ReportActivity extends AppCompatActivity {
                                 }
                             });
                         }
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        showMessage("Error posting report.");
                         error.printStackTrace();
 
                     }
