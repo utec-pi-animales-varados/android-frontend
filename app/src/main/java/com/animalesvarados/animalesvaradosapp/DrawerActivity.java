@@ -68,20 +68,16 @@ public class DrawerActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.nav_home:
-                        Toast.makeText(getApplicationContext(),"Home is selected", Toast.LENGTH_LONG).show();
                         break;
                     case R.id.nav_list:
-                        Toast.makeText(getApplicationContext(),"Historial is selected", Toast.LENGTH_LONG).show();
                         Intent k =new Intent(DrawerActivity.this, HistorialReportesActivity.class);
                         startActivity(k);
                         break;
                     case R.id.nav_gallery:
-                        Toast.makeText(getApplicationContext(),"Gallery is selected", Toast.LENGTH_LONG).show();
                         Intent i =new Intent(DrawerActivity.this, GalleryActivity.class);
                         startActivity(i);
                         break;
                     case R.id.nav_slideshow:
-                        Toast.makeText(getApplicationContext(),"Slideshow is selected", Toast.LENGTH_LONG).show();
                         sharedPreferenceConfig.login_status(false);
                         sharedPreferenceConfig.saveUserName("!");
                         sharedPreferenceConfig.saveUserEmail("");
