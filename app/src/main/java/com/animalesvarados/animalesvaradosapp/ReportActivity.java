@@ -467,6 +467,13 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         showMessage("Report posted!");
+                        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+                        if(sharedPreferencesConfig.read_login_status()){
+                            Intent intent = new Intent(getActivity(), DrawerActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }
 
                     }
                 }, new Response.ErrorListener() {
