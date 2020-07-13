@@ -108,6 +108,22 @@ public class ReportActivity extends AppCompatActivity {
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
+        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
+
+        if(!sharedPreferencesConfig.read_login_status()){
+            button = (Button) findViewById(R.id.btnLogin);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(animalId != 0) {
+                        postReport();
+                        openDialog();
+                    }
+
+                }
+            });
+        }
+
 
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -451,17 +467,6 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         showMessage("Report posted!");
-                        SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
-
-                        if(!sharedPreferencesConfig.read_login_status()){
-                            button = (Button) findViewById(R.id.btnLogin);
-                            button.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    openDialog();
-                                }
-                            });
-                        }
 
                     }
                 }, new Response.ErrorListener() {
