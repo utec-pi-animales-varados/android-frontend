@@ -451,14 +451,6 @@ public class ReportActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         showMessage("Report posted!");
-
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        showMessage("Error posting report.");
                         SharedPreferenceConfig sharedPreferencesConfig = new SharedPreferenceConfig(getApplicationContext());
 
                         if(!sharedPreferencesConfig.read_login_status()){
@@ -470,6 +462,14 @@ public class ReportActivity extends AppCompatActivity {
                                 }
                             });
                         }
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showMessage("Error posting report.");
+
                         error.printStackTrace();
 
                     }
