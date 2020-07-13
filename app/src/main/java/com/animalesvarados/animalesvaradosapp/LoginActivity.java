@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        showMessage("Authorized!");
+                        showMessage("¡Bienvenido!");
                         try
                         {
                             Log.d("response","success");
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         //TODO Qué hacer cuando ocurra un error
-                        showMessage("Unauthorized!!!");
+                        showMessage("Datos erroneos. Intentalo de nuevo.");
                     }
                 }
         );
