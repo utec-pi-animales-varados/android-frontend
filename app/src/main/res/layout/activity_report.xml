@@ -32,7 +32,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nuevo Reporte"
+                    android:text="Reportar"
                     android:textColor="#fff"
                     android:textSize="40sp" />
             </LinearLayout>
@@ -196,7 +196,7 @@
                     android:backgroundTint="#FFF"
                     android:onClick="onClickBtnSend"
                     android:scaleType="fitCenter"
-                    android:text="Generar" />
+                    android:text="Reportar" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

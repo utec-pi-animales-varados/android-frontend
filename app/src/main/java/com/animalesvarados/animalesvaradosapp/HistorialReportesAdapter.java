@@ -66,7 +66,7 @@ public class HistorialReportesAdapter extends RecyclerView.Adapter<HistorialRepo
                 JSONObject element = elements.getJSONObject(position);
                 final int id_reporte = element.getInt("id");
                 final String fecha = element.getString("date");
-                final String ubicacion = element.getString("latitude") + ", " +element.getString("longitude");
+                final String ubicacion = element.getString("latitude").substring(0,6) + ", " +element.getString("longitude").substring(0,6);
                 final String animal = element.getJSONObject("animal").getString("name");
                 holder.fecha.setText(fecha);
                 holder.ubicacion.setText(ubicacion);
