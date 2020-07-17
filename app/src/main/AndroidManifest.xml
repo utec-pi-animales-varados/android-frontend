@@ -24,9 +24,12 @@
             android:parentActivityName=".DrawerActivity"
             android:label="List"
             android:theme="@style/AppTheme"></activity>
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".IngresoCuentaActivity" />
+        <activity android:name=".LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".IngresoCuentaActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity android:name=".DetalleReporteActivity" />
         <activity
             android:name=".MainActivity"
