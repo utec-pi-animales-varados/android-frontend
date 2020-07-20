@@ -332,13 +332,17 @@ public class ReportActivity extends AppCompatActivity {
 
     public void getImgLinks(){
 
-            String url = Constant.DB_URL.concat("/uploadImagen");
+            String url = Constant.DB_URL.concat("/imagen");
             VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
                     new Response.Listener<NetworkResponse>() {
                         @Override
                         public void onResponse(NetworkResponse response) {
                             String obj = new String(response.data);
                             Log.d("UPLOAD SUCCESS", obj.toString());
+                            String[] temp = obj.split("/");
+                            obj = temp[temp.length-1];
+                            obj = obj.substring(0, obj.length()-1);
+                            Log.d("IMAGE PATH",obj);
                             images.add(obj);
                         }
                     },
